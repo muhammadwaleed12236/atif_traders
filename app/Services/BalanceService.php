@@ -16,9 +16,12 @@ class BalanceService
      * Positive = Customer owes money (Dr)
      * Negative = Customer has advance/credit (Cr)
      */
-    public function getCustomerBalance(int $customerId): float
+    public function getCustomerBalance($customer): float
     {
-        $customer = Customer::find($customerId);
+        if (!($customer instanceof Customer)) {
+            $customer = Customer::find($customer);
+        }
+
         if (! $customer) {
             return 0;
         }

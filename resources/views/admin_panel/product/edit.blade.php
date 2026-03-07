@@ -376,32 +376,28 @@
                                     <input type="text" class="form-control-pro" name="model" value="{{ $product->model }}" placeholder="Optional">
                                 </div>
 
-                                {{-- Row 3: Colors & HS --}}
-                                <div class="col-md-8">
-                                    <label class="form-label-pro">Colors</label>
-                                    <select class="form-control-pro" name="color[]" id="color-select" multiple="multiple" style="width: 100%">
-                                        @php
-                                            $colors = is_string($product->color) ? json_decode($product->color, true) : $product->color ?? [];
-                                            if (!is_array($colors)) {
-                                                $colors = [];
-                                            }
-                                        @endphp
-                                        <option value="Black" {{ in_array('Black', $colors) ? 'selected' : '' }}>Black</option>
-                                        <option value="White" {{ in_array('White', $colors) ? 'selected' : '' }}>White</option>
-                                        <option value="Red" {{ in_array('Red', $colors) ? 'selected' : '' }}>Red</option>
-                                        <option value="Blue" {{ in_array('Blue', $colors) ? 'selected' : '' }}>Blue</option>
-                                        <option value="Beige" {{ in_array('Beige', $colors) ? 'selected' : '' }}>Beige</option>
-                                        @foreach ($colors as $c)
-                                            @if (!in_array($c, ['Black', 'White', 'Red', 'Blue', 'Beige']))
-                                                <option value="{{ $c }}" selected>{{ $c }}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label-pro">HS Code</label>
-                                    <input type="text" class="form-control-pro" name="hs_code" required value="{{ $product->hs_code }}">
-                                </div>
+                                 {{-- Row 3: Colors --}}
+                                 <div class="col-md-12">
+                                     <label class="form-label-pro">Colors</label>
+                                     <select class="form-control-pro" name="color[]" id="color-select" multiple="multiple" style="width: 100%">
+                                         @php
+                                             $colors = is_string($product->color) ? json_decode($product->color, true) : $product->color ?? [];
+                                             if (!is_array($colors)) {
+                                                 $colors = [];
+                                             }
+                                         @endphp
+                                         <option value="Black" {{ in_array('Black', $colors) ? 'selected' : '' }}>Black</option>
+                                         <option value="White" {{ in_array('White', $colors) ? 'selected' : '' }}>White</option>
+                                         <option value="Red" {{ in_array('Red', $colors) ? 'selected' : '' }}>Red</option>
+                                         <option value="Blue" {{ in_array('Blue', $colors) ? 'selected' : '' }}>Blue</option>
+                                         <option value="Beige" {{ in_array('Beige', $colors) ? 'selected' : '' }}>Beige</option>
+                                         @foreach ($colors as $c)
+                                             @if (!in_array($c, ['Black', 'White', 'Red', 'Blue', 'Beige']))
+                                                 <option value="{{ $c }}" selected>{{ $c }}</option>
+                                             @endif
+                                         @endforeach
+                                     </select>
+                                 </div>
                             </div>
                         </div>
                     </div>

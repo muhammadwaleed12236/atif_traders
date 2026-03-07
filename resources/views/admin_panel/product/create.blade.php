@@ -358,31 +358,27 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label-pro">Model / Series</label>
-                                    <input type="text" class="form-control-pro" name="model" placeholder="Optional">
-                                </div>
+                                 <div class="col-md-3">
+                                     <label class="form-label-pro">Model / Series</label>
+                                     <input type="text" class="form-control-pro" name="model" placeholder="Optional">
+                                 </div>
 
-                                {{-- Row 3: Colors & HS --}}
-                                <div class="col-md-8">
-                                    <label class="form-label-pro">Colors</label>
-                                    <select class="form-control-pro" name="color[]" id="color-select" multiple="multiple" style="width: 100%">
-                                        <option value="Black">Black</option>
-                                        <option value="White">White</option>
-                                        <option value="Red">Red</option>
-                                        <option value="Blue">Blue</option>
-                                        <option value="Beige">Beige</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label-pro">HS Code</label>
-                                    <input type="text" class="form-control-pro" name="hs_code" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                 {{-- Row 3: Colors --}}
+                                 <div class="col-md-12">
+                                     <label class="form-label-pro">Colors</label>
+                                     <select class="form-control-pro" name="color[]" id="color-select" multiple="multiple" style="width: 100%">
+                                         <option value="Black">Black</option>
+                                         <option value="White">White</option>
+                                         <option value="Red">Red</option>
+                                         <option value="Blue">Blue</option>
+                                         <option value="Beige">Beige</option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
 
             {{-- SECTION 2: MEASUREMENTS & STOCK --}}
             <div class="section-card">

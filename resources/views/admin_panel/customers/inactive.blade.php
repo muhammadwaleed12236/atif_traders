@@ -10,7 +10,6 @@
                 <th>Customer ID</th>
                 <th>Name</th>
                 <th>Mobile</th>
-                <th>Zone</th>
             </tr>
         </thead>
         <tbody>
@@ -19,7 +18,6 @@
                 <td>{{ $customer->customer_id }}</td>
                 <td>{{ $customer->customer_name }}</td>
                 <td>{{ $customer->mobile }}</td>
-                <td>{{ $customer->zone }}</td>
             </tr>
             @endforeach
         </tbody>

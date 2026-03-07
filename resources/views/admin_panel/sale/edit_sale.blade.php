@@ -341,13 +341,28 @@
                      But let's stick to the existing structure. --}}
                 <input type="hidden" name="booking_id" id="booking_id" value="">
 
+                {{-- HEADER --}}
+                <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                    <div>
+                        <small class="text-secondary" id="entryDateTime">Entry Date_Time: --</small> <br>
+                        <a href="{{ route('sale.index') }}" target="_blank" rel="noopener"
+                            class="btn btn-sm btn-outline-secondary" title="Sales List (opens new tab)">
+                            Sales List
+                        </a>
+                    </div>
+
+                    <h2 class="header-text text-secondary fw-bold mb-0">Sales (Edit)</h2>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-success" id="btnHeaderPosted"
+                            disabled>Sale</button>
+                    </div>
+                </div>
+
                 <div class="d-flex gap-3 align-items-start border-bottom py-3">
-                    {{-- LEFT: Customer & Date --}}
+                    {{-- LEFT: Invoice & Customer --}}
                     <div class="p-3 border rounded-3 minw-350">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title text-primary mb-0">Edit Sale</h5>
-                            <span class="badge bg-light text-dark border" id="entryDateTime"></span>
-                        </div>
+                        <div class="section-title mb-3">Invoice & Customer</div>
 
                         {{-- Invoice No --}}
                         <div class="mb-2">
@@ -752,17 +767,14 @@
 
                 {{-- Buttons --}}
                 <div class="d-flex flex-wrap gap-2 justify-content-center p-3 mt-3 border-top">
-                    <button type="button" class="btn btn-sm btn-primary" id="btnEdit">Edit</button>
-                    <button type="button" class="btn btn-sm btn-warning" id="btnRevert">Revert</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnSave"><i class="fas fa-bookmark me-1"></i>Booking</button>
+                    <button type="button" class="btn btn-sm btn-success" id="btnPosted" disabled><i class="fas fa-check-circle me-1"></i>Sale</button>
 
-                    <button type="button" class="btn btn-sm btn-success" id="btnSave">Save</button>
-                    <button type="button" class="btn btn-sm btn-outline-success" id="btnPosted" disabled>Posted</button>
-
-                    <button type="button" class="btn btn-sm btn-secondary" id="btnPrint">Print</button>
-                    <button type="button" class="btn btn-sm btn-outline-info" id="btnEstimate">Estimate</button>
-                    <button type="button" class="btn btn-sm btn-secondary" id="btnPrint2">Print-2</button>
-                    <button type="button" class="btn btn-sm btn-secondary" id="btnDCPrint">DC Print</button>
+                    <button type="button" class="btn btn-sm btn-secondary" id="btnPrint"><i class="fas fa-print me-1"></i>Print A4 Half</button>
+                    <button type="button" class="btn btn-sm btn-outline-info" id="btnEstimate"><i class="fas fa-file-invoice me-1"></i>Estimate</button>
+                    <button type="button" class="btn btn-sm btn-secondary" id="btnPrint2"><i class="fas fa-receipt me-1"></i>Print Thermal</button>
                 </div>
+            </form>
             @endsection
 
             @section('js')
@@ -822,21 +834,6 @@
                     });
 
                     // Edit Sale Specific Handlers
-                    $('#btnEdit').on('click', () => alert('Edit mode activated'));
-                    $('#btnRevert').on('click', () => location.reload());
-
-                    $('#btnDelete').on('click', function() {
-                        if (!confirm('Reset all fields?')) return;
-                        $('#saleForm')[0].reset();
-                        $('#booking_id').val('');
-                        $('#salesTableBody').html('');
-                        addNewRow();
-                        $('#totalAmount').text('0.00');
-                        updateGrandTotals();
-                        refreshPostedState();
-                        if (typeof showAlert === 'function') showAlert('success', 'Form cleared');
-                    });
-
                     $('#btnPrint').on('click', function() {
                         ensureSaved().then(id => window.open('{{ url('sales') }}/' + id + '/invoice', '_blank'));
                     });
@@ -846,14 +843,7 @@
                     $('#btnPrint2').on('click', function() {
                         ensureSaved().then(id => window.open('{{ url('sales') }}/' + id + '/recepit', '_blank'));
                     });
-                    $('#btnDCPrint').on('click', function() {
-                        ensureSaved().then(id => window.open('{{ url('sales') }}/' + id + '/dc', '_blank'));
-                    });
-                    $('#btnExit').on('click', function() {
-                        ensureSaved().finally(() => {
-                            window.location.href = "{{ route('sale.index') }}";
-                        });
-                    });
+
                 </script>
                 @if (isset($sale))
                     <script>

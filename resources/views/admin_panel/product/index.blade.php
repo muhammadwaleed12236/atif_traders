@@ -205,10 +205,7 @@
                                         <small class="text-muted d-block">Colors</small>
                                         <span class="text-dark" id="view_color" style="font-size: 0.9rem;">-</span>
                                     </div>
-                                    <div class="mb-2">
-                                        <small class="text-muted d-block">HS Code</small>
-                                        <span class="text-secondary font-weight-bold" id="view_hs_code">-</span>
-                                    </div>
+
                                     <div class="mb-0 border-top pt-2 mt-2">
                                         <small class="text-muted d-block">Created On</small>
                                         <span class="text-dark small" id="view_created_at">-</span>
@@ -394,7 +391,7 @@
                     ));
                     $('#view_brand_model').text((product.brand?.name ?? '-') + (product.model ? ' / ' +
                         product.model : ''));
-                    $('#view_hs_code').text(product.hs_code ?? '-');
+
                     $('#view_created_at').text(product.created_at ? new Date(product.created_at)
                         .toLocaleDateString() : '-');
 

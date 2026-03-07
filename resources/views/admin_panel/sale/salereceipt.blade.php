@@ -168,7 +168,8 @@
                     // Display quantity string
                     $qtyDisplay = $totalPieces;
                     if ($sizeMode == 'by_cartons' || $sizeMode == 'by_size') {
-                        $piecesPerBox = (int) ($item['pieces_per_box'] ?? 1);
+                        $piecesPerBox = (int)($item['pieces_per_box'] ?? 1);
+                        if ($piecesPerBox <= 0) $piecesPerBox = 1;
                         $boxes = floor($totalPieces / $piecesPerBox);
                         $loose = $totalPieces % $piecesPerBox;
 

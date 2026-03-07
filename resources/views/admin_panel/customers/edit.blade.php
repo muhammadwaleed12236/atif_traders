@@ -231,11 +231,18 @@
                                 value="{{ $customer->balance_range ?? 0 }}" style="border-color: #86efac; background: #f0fdf4;">
                         </div>
                         <div class="input-group-modern" style="grid-column: span 4;">
-                            <label class="modern-label text-primary">Payment Reminder Date</label>
-                            <input type="date" class="modern-control" name="payment_reminder_date" 
-                                value="{{ $customer->payment_reminder_date }}"
-                                style="border-color: #93c5fd; background: #eff6ff;">
-                            <small class="text-muted" style="font-size: 0.65rem;">Schedule a notification for this day</small>
+                            <label class="modern-label text-primary">Payment Reminder Day</label>
+                            <select class="modern-control" name="reminder_day" style="border-color: #93c5fd; background: #eff6ff;">
+                                <option value="">No Reminder</option>
+                                <option value="Monday" {{ $customer->reminder_day == 'Monday' ? 'selected' : '' }}>Monday</option>
+                                <option value="Tuesday" {{ $customer->reminder_day == 'Tuesday' ? 'selected' : '' }}>Tuesday</option>
+                                <option value="Wednesday" {{ $customer->reminder_day == 'Wednesday' ? 'selected' : '' }}>Wednesday</option>
+                                <option value="Thursday" {{ $customer->reminder_day == 'Thursday' ? 'selected' : '' }}>Thursday</option>
+                                <option value="Friday" {{ $customer->reminder_day == 'Friday' ? 'selected' : '' }}>Friday</option>
+                                <option value="Saturday" {{ $customer->reminder_day == 'Saturday' ? 'selected' : '' }}>Saturday</option>
+                                <option value="Sunday" {{ $customer->reminder_day == 'Sunday' ? 'selected' : '' }}>Sunday</option>
+                            </select>
+                            <small class="text-muted" style="font-size: 0.65rem;">Schedule a weekly notification on this day</small>
                         </div>
 
                         {{-- ============ COMMENTED OUT FIELDS ============ --}}

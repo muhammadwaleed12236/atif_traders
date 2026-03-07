@@ -124,6 +124,7 @@ class CustomerController extends Controller
             'customer_type'    => 'nullable',
             'sales_officer_id' => 'nullable|exists:sales_officers,id',
             'payment_reminder_date' => 'nullable|date',
+            'reminder_day'     => 'nullable|string',
         ]);
 
         // Customer create
@@ -289,16 +290,22 @@ class CustomerController extends Controller
 
         // Update customer reminder: If they made a payment, set next reminder to +7 days
         $cust = Customer::find($request->customer_id);
-        if ($cust && $newBalance > 0) {
-            $cust->update([
-                'payment_reminder_date' => date('Y-m-d', strtotime('+7 days')),
+        if ($cust) {
+            $updateData = [
                 'reminder_snoozed_at' => null // clear snooze
-            ]);
-        } elseif ($cust && $newBalance <= 0) {
-            $cust->update([
-                'payment_reminder_date' => null,
-                'reminder_snoozed_at' => null
-            ]);
+            ];
+
+            if ($newBalance > 0) {
+                // Only auto-reschedule if they DON'T use a fixed weekly day
+                if (!$cust->reminder_day) {
+                    $updateData['payment_reminder_date'] = date('Y-m-d', strtotime('+7 days'));
+                }
+            } else {
+                // Clear dynamic date if balance settled
+                $updateData['payment_reminder_date'] = null;
+            }
+
+            $cust->update($updateData);
         }
 
         return back()->with('success', 'Payment adjusted and ledger updated.');
@@ -319,9 +326,15 @@ class CustomerController extends Controller
     public function getReminders()
     {
         $today = date('Y-m-d');
+        $todayDay = date('l'); // Monday, Tuesday, etc.
         
-        $customers = Customer::whereNotNull('payment_reminder_date')
-            ->where('payment_reminder_date', '<=', $today)
+        $customers = Customer::where(function($q) use ($today, $todayDay) {
+                $q->where(function($sq) use ($today) {
+                    $sq->whereNotNull('payment_reminder_date')
+                       ->where('payment_reminder_date', '<=', $today);
+                })
+                ->orWhere('reminder_day', $todayDay);
+            })
             ->where(function($q) use ($today) {
                 $q->whereNull('reminder_snoozed_at')
                   ->orWhere('reminder_snoozed_at', '<', $today);
@@ -337,7 +350,7 @@ class CustomerController extends Controller
                     'id' => $c->id,
                     'name' => $c->customer_name,
                     'balance' => $balance,
-                    'date' => $c->payment_reminder_date
+                    'date' => $c->reminder_day ?? $c->payment_reminder_date
                 ];
             }
             return null;

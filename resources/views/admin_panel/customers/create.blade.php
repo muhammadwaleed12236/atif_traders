@@ -271,10 +271,18 @@
                                 value="0" style="border-color: #86efac; background: #f0fdf4;">
                         </div>
                         <div class="input-group-modern" style="grid-column: span 4;">
-                            <label class="modern-label text-primary">Payment Reminder Date</label>
-                            <input type="date" class="modern-control" name="payment_reminder_date" 
-                                style="border-color: #93c5fd; background: #eff6ff;">
-                            <small class="text-muted" style="font-size: 0.65rem;">Schedule a notification for this day</small>
+                            <label class="modern-label text-primary">Payment Reminder Day</label>
+                            <select class="modern-control" name="reminder_day" style="border-color: #93c5fd; background: #eff6ff;">
+                                <option value="">No Reminder</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                            <small class="text-muted" style="font-size: 0.65rem;">Schedule a weekly notification on this day</small>
                         </div>
 
                         {{-- ============ COMMENTED OUT FIELDS ============ --}}
