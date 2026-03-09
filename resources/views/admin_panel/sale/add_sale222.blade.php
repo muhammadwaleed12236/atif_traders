@@ -561,6 +561,10 @@
                                 <div class="col-5 text-end"><span id="tOrderDisc">0.00</span></div>
                             </div>
                             <div class="row py-1">
+                                <div class="col-7 fw-bold">Current Bill Total</div>
+                                <div class="col-5 text-end fw-bold"><span id="tCurrentBill">0.00</span></div>
+                            </div>
+                            <div class="row py-1">
                                 <div class="col-7 text-danger">Previous Balance</div>
                                 <div class="col-5 text-end text-danger"><span id="tPrev">0.00</span></div>
                             </div>

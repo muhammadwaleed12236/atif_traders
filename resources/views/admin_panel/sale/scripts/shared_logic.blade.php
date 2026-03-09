@@ -180,6 +180,7 @@
     <!-- NET AMOUNT -->
     <td class="col-amount">
       <input type="text" class="form-control sales-amount text-end input-readonly" name="total[]" value="0" readonly tabindex="-1">
+      <input type="hidden" class="gross-amount">
     </td>
 
     <!-- ACTION -->
@@ -216,7 +217,7 @@
             }
 
             $row.find('.pack-qty').val(pRes.pieces_per_box || 1);
-            $row.find('.price-per-piece').val(pRes.price_per_m2 || 0);
+            $row.find('.price-per-piece').val(pRes.sale_price_per_piece || pRes.price_per_m2 || 0);
 
             $row.find('.size-h').val(pRes.height || '-');
             $row.find('.size-w').val(pRes.width || '-');
@@ -377,7 +378,9 @@
             $row.find('.discount-amount').val(dam.toFixed(2));
         }
 
-        $row.find('.sales-amount').val(gross.toFixed(2));
+        const netRow = Math.max(0, gross - dam);
+        $row.find('.gross-amount').val(gross.toFixed(2));
+        $row.find('.sales-amount').val(netRow.toFixed(2));
     }
 
     function updateGrandTotals() {
@@ -388,9 +391,13 @@
 
         $('#salesTableBody tr').each(function() {
             const $r = $(this);
-            const gross = toNum($r.find('.sales-amount').val());
+            // We use the hidden gross amount if available, otherwise fallback to sales-amount
+            let gross = toNum($r.find('.gross-amount').val());
+            const net = toNum($r.find('.sales-amount').val());
             const dam = toNum($r.find('.discount-amount').val());
-            const net = Math.max(0, gross - dam);
+            
+            // If gross wasn't set (maybe during initial load), calculate it
+            if (gross <= 0 && net > 0) gross = net + dam;
 
             // Piece calc for total
             const mode = $r.data('size_mode');
@@ -432,6 +439,9 @@
         $('#tPrev').text(prev.toFixed(2));
         $('#tPayable').text(payable.toFixed(2));
         $('#totalAmount').text(tNet.toFixed(2));
+
+        // Display current bill total after all discounts
+        $('#tCurrentBill').text(currentInvoiceTotal.toFixed(2));
 
         $('#subTotal1').val(tGross.toFixed(2));
         $('#subTotal2').val(tNet.toFixed(2));

@@ -523,11 +523,15 @@
                                   </div>
                               </div>
                               <div class="row py-1">
-                                  <div class="col-7 text-muted">Aditional Discount Rs</div>
-                                  <div class="col-5 text-end"><span id="tOrderDisc">0.00</span></div>
-                              </div>
-                              <div class="row py-1">
-                                  <div class="col-7 text-danger">Previous Balance</div>
+                                <div class="col-7 text-muted">Aditional Discount Rs</div>
+                                <div class="col-5 text-end"><span id="tOrderDisc">0.00</span></div>
+                            </div>
+                            <div class="row py-1">
+                                <div class="col-7 fw-bold">Current Bill Total</div>
+                                <div class="col-5 text-end fw-bold"><span id="tCurrentBill">0.00</span></div>
+                            </div>
+                            <div class="row py-1">
+                                <div class="col-7 text-danger">Previous Balance</div>
                                   <div class="col-5 text-end text-danger"><span id="tPrev">0.00</span></div>
                               </div>
                               <div class="row py-2">
@@ -819,6 +823,7 @@
                           $row.find('.sales-amount').val(parseFloat(item.total || 0).toFixed(2));
 
                           // Stock is already populated by warehouse change event
+                          if (typeof computeRow === 'function') computeRow($row);
                       }, 500); // Wait 500ms for warehouse AJAX to complete
                   }
               }
@@ -1215,6 +1220,7 @@
     <!-- NET AMOUNT -->
     <td class="col-amount">
       <input type="text" class="form-control sales-amount text-end input-readonly" name="total[]" value="0" readonly tabindex="-1">
+      <input type="hidden" class="gross-amount">
     </td>
 
     <!-- ACTION -->
@@ -1562,8 +1568,10 @@
               }
 
               /* ===== ROW AMOUNT (GROSS) ===== */
-              // "in amount wont show disscouted" -> Show Gross
-              $row.find('.sales-amount').val(gross.toFixed(2));
+              // "in amount wont show disscouted" -> Show Net but store Gross
+              const netRow = Math.max(0, gross - dam);
+              $row.find('.gross-amount').val(gross.toFixed(2));
+              $row.find('.sales-amount').val(netRow.toFixed(2));
           }
 
 
@@ -1611,11 +1619,12 @@
 
                   // Amount Column is now GROSS
                   // We re-read it or re-calculate? Reading is safer to match UI.
-                  const gross = toNum($r.find('.sales-amount').val());
+                  let gross = toNum($r.find('.gross-amount').val());
+                  const net = toNum($r.find('.sales-amount').val());
                   const dam = toNum($r.find('.discount-amount').val());
-
-                  // Net for this row
-                  const net = Math.max(0, gross - dam);
+                  
+                  // fallback if gross not set
+                  if (gross <= 0 && net > 0) gross = net + dam;
 
                   // Total Pieces
                   const qtyPcs = toNum($r.find('.sales-qty').val());
@@ -1645,6 +1654,7 @@
               $('#tSub').text(tNet.toFixed(2));
               $('#tOrderDisc').text(orderDisc.toFixed(2));
               $('#tPrev').text(prev.toFixed(2));
+              $('#tCurrentBill').text(currentInvoiceTotal.toFixed(2));
               $('#tPayable').text(payable.toFixed(2));
 
               // 🔥 TABLE FOOTER TOTAL

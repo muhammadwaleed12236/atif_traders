@@ -150,6 +150,37 @@ class HomeController extends Controller
                 ];
             }
 
+            // ===== PAYMENT IN / OUT STATS =====
+            $now = Carbon::now();
+            $monthStart = $now->copy()->startOfMonth();
+            $monthEnd = $now->copy()->endOfMonth();
+
+            // 1. Payment IN (Monthly)
+            $v2ReceiptsMonth = DB::table('voucher_masters')->where('voucher_type', 'receipt')->whereBetween('date', [$monthStart, $monthEnd])->sum('total_amount');
+            $v1ReceiptsMonth = DB::table('receipts_vouchers')->whereBetween('receipt_date', [$monthStart, $monthEnd])->sum('total_amount');
+            $custPaymentsMonth = DB::table('customer_payments')->whereBetween('payment_date', [$monthStart, $monthEnd])->sum('amount');
+            $paymentInMonth = $v2ReceiptsMonth + $v1ReceiptsMonth + $custPaymentsMonth;
+
+            // 2. Payment IN (Overall)
+            $v2ReceiptsAll = DB::table('voucher_masters')->where('voucher_type', 'receipt')->sum('total_amount');
+            $v1ReceiptsAll = DB::table('receipts_vouchers')->sum('total_amount');
+            $custPaymentsAll = DB::table('customer_payments')->sum('amount');
+            $paymentInOverall = $v2ReceiptsAll + $v1ReceiptsAll + $custPaymentsAll;
+
+            // 3. Payment OUT (Monthly)
+            $v2PaymentsMonth = DB::table('voucher_masters')->whereIn('voucher_type', ['payment', 'expense'])->whereBetween('date', [$monthStart, $monthEnd])->sum('total_amount');
+            $v1PaymentsMonth = DB::table('payment_vouchers')->whereBetween('receipt_date', [$monthStart, $monthEnd])->sum('total_amount');
+            $v1ExpensesMonth = DB::table('expense_vouchers')->whereBetween('entry_date', [$monthStart, $monthEnd])->sum('total_amount');
+            $vendorPaymentsMonth = DB::table('vendor_payments')->whereBetween('payment_date', [$monthStart, $monthEnd])->sum('amount');
+            $paymentOutMonth = $v2PaymentsMonth + $v1PaymentsMonth + $v1ExpensesMonth + $vendorPaymentsMonth;
+
+            // 4. Payment OUT (Overall)
+            $v2PaymentsAll = DB::table('voucher_masters')->whereIn('voucher_type', ['payment', 'expense'])->sum('total_amount');
+            $v1PaymentsAll = DB::table('payment_vouchers')->sum('total_amount');
+            $v1ExpensesAll = DB::table('expense_vouchers')->sum('total_amount');
+            $vendorPaymentsAll = DB::table('vendor_payments')->sum('amount');
+            $paymentOutOverall = $v2PaymentsAll + $v1PaymentsAll + $v1ExpensesAll + $vendorPaymentsAll;
+
             return view('admin_panel.dashboard', compact(
                 'categoryCount',
                 'subcategoryCount',
@@ -161,7 +192,11 @@ class HomeController extends Controller
                 'totalSalesReturns',
                 'salesChartStats',
                 'purchaseChartStats',
-                'financialSummary'
+                'financialSummary',
+                'paymentInMonth',
+                'paymentInOverall',
+                'paymentOutMonth',
+                'paymentOutOverall'
             ));
         } else {
             return redirect()->back()->with('error', 'Unauthorized access');

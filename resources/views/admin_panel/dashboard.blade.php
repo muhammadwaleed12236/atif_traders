@@ -533,16 +533,6 @@
                             <div class="stat-label">Purchase Expenses</div>
                         </div>
 
-                        <!-- Receivables (Money coming in) -->
-                        <div class="stat-card info">
-                            <div class="stat-header">
-                                <div class="stat-icon"><i class="fa fa-user-clock"></i></div>
-                                <div class="stat-trend">Assets</div>
-                            </div>
-                            <div class="stat-value">Rs {{ number_format($financialSummary['receivables'] ?? 0, 0) }}</div>
-                            <div class="stat-label">Total Receivables (Due)</div>
-                        </div>
-
                         <!-- Payables (Money going out) -->
                         <div class="stat-card warning">
                             <div class="stat-header">
@@ -552,6 +542,38 @@
                             <div class="stat-value">Rs {{ number_format($financialSummary['payables'] ?? 0, 0) }}</div>
                             <div class="stat-label">Total Payables (Owe)</div>
                         </div>
+                    </div>
+
+                    <h5 class="mb-3 text-muted"
+                        style="font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Cash Flow Summary (Payments)
+                    </h5>
+                    <div class="stats-grid mb-4">
+                        <!-- Payment In -->
+                        <a href="{{ route('all_recepit_vochers') }}" class="stat-card info text-decoration-none" style="cursor: pointer;">
+                            <div class="stat-header">
+                                <div class="stat-icon"><i class="fa fa-arrow-down"></i></div>
+                                <div class="stat-trend up">This Month</div>
+                            </div>
+                            <div class="stat-value">Rs {{ number_format($paymentInMonth, 0) }}</div>
+                            <div class="stat-label">Payment In (Receipts)</div>
+                            <div class="mt-2 pt-2 border-top">
+                                <small class="text-muted">Overall: <strong>Rs {{ number_format($paymentInOverall, 0) }}</strong></small>
+                            </div>
+                        </a>
+
+                        <!-- Payment Out -->
+                        <a href="{{ route('all_Payment_vochers') }}" class="stat-card danger text-decoration-none" style="cursor: pointer;">
+                            <div class="stat-header">
+                                <div class="stat-icon"><i class="fa fa-arrow-up"></i></div>
+                                <div class="stat-trend down">This Month</div>
+                            </div>
+                            <div class="stat-value">Rs {{ number_format($paymentOutMonth, 0) }}</div>
+                            <div class="stat-label">Payment Out (Vendor/Exp)</div>
+                            <div class="mt-2 pt-2 border-top">
+                                <small class="text-muted">Overall: <strong>Rs {{ number_format($paymentOutOverall, 0) }}</strong></small>
+                            </div>
+                        </a>
                     </div>
                 @endif
 
