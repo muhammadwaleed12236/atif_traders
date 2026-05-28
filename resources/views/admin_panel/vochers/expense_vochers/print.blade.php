@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Expense Voucher - Yasir Pipe</title>
+    <title>Expense Voucher - Vahla Mill Store</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -188,7 +188,7 @@
 
         {{-- ── HEADER ── --}}
         <div class="vch-header">
-            <h1>Yasir Pipe</h1>
+            <h1>Vahla Mill Store</h1>
             <span class="vch-badge">EXPENSE VOUCHER</span>
         </div>
         <hr class="sep">

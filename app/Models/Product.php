@@ -67,6 +67,11 @@ class Product extends Model
         return $this->hasMany(StockMovement::class);
     }
 
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
     public function scopeWithAvailable($q)
     {
         return $q->withSum('movements as available_qty', 'qty'); // sum of ledger

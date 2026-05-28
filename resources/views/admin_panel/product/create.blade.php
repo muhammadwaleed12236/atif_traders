@@ -238,7 +238,7 @@
                                                 <button type="button" class="btn btn-light border px-2 shadow-sm" data-toggle="modal" data-target="#subcategoryModal">+</button>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label class="form-label-pro">Brand</label>
                                             <div class="d-flex gap-1">
                                                 <select class="form-select form-control-pro form-select-pro" name="brand_id" required>
@@ -248,6 +248,18 @@
                                                     @endforeach
                                                 </select>
                                                 <button type="button" class="btn btn-light border px-2 shadow-sm" data-toggle="modal" data-target="#brandModal">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label-pro">Unit (UOM) <span class="text-danger">*</span></label>
+                                            <div class="d-flex gap-1">
+                                                <select class="form-select form-control-pro form-select-pro" name="unit" id="unitDropdown" required>
+                                                    <option value="">Select...</option>
+                                                    @foreach ($units as $unit)
+                                                        <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <button type="button" class="btn btn-light border px-2 shadow-sm" data-toggle="modal" data-target="#unitModal">+</button>
                                             </div>
                                         </div>
                                     </div>
@@ -378,6 +390,63 @@
                         </div>
                     </div>
 
+                    {{-- CARD 3: Variants (Auto-generated based on UOM) --}}
+                    <div class="section-card">
+                        <div class="card-header-pro">
+                            <h5 class="card-title-pro"><i class="las la-layer-group text-success"></i> Variants <small class="text-muted fw-normal" style="font-size:0.7rem;">(Auto-generated based on selected Unit — adjust as needed)</small></h5>
+                        </div>
+                        <div class="card-body-pro">
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle mb-3" id="variantsTable" style="font-size:0.85rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width:20%;">Variant Name</th>
+                                            <th style="width:12%;">Wt / Piece</th>
+                                            <th style="width:8%;">Unit</th>
+                                            <th style="width:14%;">Sale Price <span class="text-danger">*</span></th>
+                                            <th style="width:14%;">Purchase Price <span class="text-danger">*</span></th>
+                                            <th style="width:10%;">Alert Qty</th>
+                                            <th style="width:10%;">Barcode</th>
+                                            <th style="width:4%;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="variantsBody">
+                                        <tr class="variant-row">
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm variant-name-input" name="variant_name[]" placeholder="Auto from product + unit">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm variant-weight" name="variant_weight[]" step="0.01" min="0" placeholder="1">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm variant-unit-display" name="variant_weight_unit[]" value="Pcs" readonly style="background:#f8f9fa;width:60px;">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm variant-sale-price" name="variant_sale_price[]" step="0.01" min="0" placeholder="0.00">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm variant-purchase-price" name="variant_purchase_price[]" step="0.01" min="0" placeholder="0.00">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm" name="variant_alert_quantity[]" min="0" placeholder="0">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm" name="variant_barcode[]" placeholder="Auto">
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-variant" disabled><i class="las la-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-outline-success btn-sm" id="addVariantBtn">
+                                <i class="las la-plus"></i> Add Variant
+                            </button>
+                            <small class="text-muted ms-2">Variants auto-generate when you select a Unit. You can edit weights, prices, and add/remove rows.</small>
+                        </div>
+                    </div>
+
                     {{-- INLINE ACTIONS ROW --}}
                     <div class="d-flex justify-content-end align-items-center bg-white p-3 rounded shadow-sm border mb-4 gap-2">
                         <a href="{{ route('product') }}" class="btn btn-outline-secondary px-4 py-2" style="border-radius: var(--radius-md); font-size: 0.9rem;">Cancel</a>
@@ -445,6 +514,28 @@
                                 <input type="text" name="name" class="form-control-pro" required placeholder="e.g. Floor Tiles">
                             </div>
                             <button type="submit" class="btn btn-primary w-100 rounded-pill">Create Subcategory</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Unit Modal --}}
+        <div id="unitModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+                    <form id="unitForm" method="POST">
+                        @csrf
+                        <div class="modal-header border-0 pb-0">
+                            <h6 class="modal-title fw-bold">New Unit of Measurement</h6>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label-pro">Unit Name</label>
+                                <input type="text" name="name" class="form-control-pro" required placeholder="e.g. Pieces, Carton, Kg">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill" id="saveUnitBtn">Create Unit</button>
                         </div>
                     </form>
                 </div>
@@ -651,6 +742,245 @@
             
             if (!barIn.value) fetch(barcodeUrl).then(r => r.json()).then(d => barIn.value = d.barcode_number);
             barBtn.addEventListener('click', () => fetch(barcodeUrl).then(r => r.json()).then(d => barIn.value = d.barcode_number));
+
+            // ===== Unit Modal: Create Unit via AJAX =====
+            $('#unitForm').on('submit', function(e) {
+                e.preventDefault();
+                const btn = document.getElementById('saveUnitBtn');
+                btn.innerHTML = 'Saving...';
+                btn.disabled = true;
+                const formData = new FormData(this);
+                fetch('{{ route("store.Unit") }}', {
+                    method: 'POST',
+                    headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'},
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.errors) {
+                        Swal.fire({icon:'error', title:'Error', html: Object.values(data.errors).flat().join('<br>')});
+                        btn.innerHTML = 'Create Unit';
+                        btn.disabled = false;
+                        return;
+                    }
+                    // Reload units dropdown
+                    return fetch('{{ route("store.Unit") }}', {
+                        method: 'POST',
+                        headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'},
+                        body: formData
+                    });
+                })
+                .catch(() => {});
+                // Simple: reload page to refresh dropdown
+                location.reload();
+            });
+
+            // ===== Auto-generate variants based on Unit & Product Name =====
+            const unitDropdown = document.getElementById('unitDropdown');
+            const productNameInput = document.querySelector('input[name="product_name"]');
+            const variantsBody = document.getElementById('variantsBody');
+
+            // Store unit names mapped by ID (passed from server)
+            const unitNames = {};
+            @foreach ($units as $unit)
+                unitNames[{{ $unit->id }}] = '{{ $unit->name }}';
+            @endforeach
+
+            function getUnitName(id) {
+                return unitNames[id] || '';
+            }
+
+            function autoGenerateVariants() {
+                const unitId = unitDropdown.value;
+                const unitName = getUnitName(unitId);
+                const prodName = productNameInput.value.trim() || 'Product';
+
+                if (!unitId || !unitName) return;
+
+                const unitLower = unitName.toLowerCase();
+
+                // Auto-set size_mode based on unit
+                const sizeModeInputs = document.querySelectorAll('input[name="size_mode"]');
+                let targetMode = 'by_pieces';
+                if (unitLower === 'carton' || unitLower === 'cartons' || unitLower === 'ctn' || unitLower === 'box' || unitLower === 'boxes') {
+                    targetMode = 'by_cartons';
+                } else if (unitLower === 'pieces' || unitLower === 'pcs' || unitLower === 'piece') {
+                    targetMode = 'by_pieces';
+                } else {
+                    targetMode = 'by_pieces';
+                }
+                sizeModeInputs.forEach(input => {
+                    input.checked = (input.value === targetMode);
+                    // Trigger the label style update
+                    const evt = new Event('change');
+                    input.dispatchEvent(evt);
+                });
+
+                // Clear existing rows
+                variantsBody.innerHTML = '';
+
+                if (unitLower === 'pieces' || unitLower === 'pcs' || unitLower === 'piece') {
+                    // Pieces: 1 variant — name=product, wt=1, unit=Pcs
+                    addVariantRow(prodName, 1, 'Pcs');
+                }
+                else if (unitLower === 'carton' || unitLower === 'cartons' || unitLower === 'ctn' || unitLower === 'box' || unitLower === 'boxes') {
+                    // Carton: 2 variants — CTN (wt=12) + PCS (wt=1)
+                    addVariantRow(prodName + ' CTN', 12, 'Pcs');
+                    addVariantRow(prodName + ' PCS', 1, 'Pcs');
+                }
+                else if (unitLower === 'kg' || unitLower === 'kilogram' || unitLower === 'kgs') {
+                    // Kg: 1 variant — name=product, wt=1, unit=Kg
+                    addVariantRow(prodName, 1, 'Kg');
+                }
+                else if (unitLower === 'gram' || unitLower === 'g' || unitLower === 'grams') {
+                    // Gram: 1 variant — name=product, wt=1, unit=g
+                    addVariantRow(prodName, 1, 'g');
+                }
+                else if (unitLower === 'meter' || unitLower === 'm' || unitLower === 'meters') {
+                    // Meter: 1 variant
+                    addVariantRow(prodName, 1, 'm');
+                }
+                else if (unitLower === 'liter' || unitLower === 'l' || unitLower === 'litre') {
+                    addVariantRow(prodName, 1, 'L');
+                }
+                else {
+                    // Default: 1 variant with the unit name
+                    addVariantRow(prodName, 1, unitName);
+                }
+
+                // Enable remove on all rows except first
+                const rows = variantsBody.querySelectorAll('.variant-row');
+                rows.forEach((row, i) => {
+                    const rm = row.querySelector('.remove-variant');
+                    rm.disabled = (i === 0);
+                });
+            }
+
+            function addVariantRow(name, weight, unit) {
+                const row = document.createElement('tr');
+                row.className = 'variant-row';
+                row.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control form-control-sm variant-name-input" name="variant_name[]" value="${name}" placeholder="Variant name">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm variant-weight" name="variant_weight[]" step="0.01" min="0" value="${weight}" placeholder="1">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm variant-unit-display" name="variant_weight_unit[]" value="${unit}" readonly style="background:#f8f9fa;width:60px;">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm variant-sale-price" name="variant_sale_price[]" step="0.01" min="0" placeholder="0.00">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm variant-purchase-price" name="variant_purchase_price[]" step="0.01" min="0" placeholder="0.00">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm" name="variant_alert_quantity[]" min="0" placeholder="0">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm" name="variant_barcode[]" placeholder="Auto">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-variant"><i class="las la-trash"></i></button>
+                    </td>
+                `;
+                // Wire remove button
+                const rmBtn = row.querySelector('.remove-variant');
+                rmBtn.addEventListener('click', function() {
+                    row.remove();
+                });
+                variantsBody.appendChild(row);
+            }
+
+            // ===== Auto-calculate variant prices from base rate × weight =====
+            function calculateVariantPrices() {
+                const baseSale = parseFloat(document.getElementById('sale_price_per_box').value) || 0;
+                const basePurch = parseFloat(document.getElementById('purchase_price_per_piece').value) || 0;
+                const unitName = getUnitName(unitDropdown.value).toLowerCase();
+                const rows = variantsBody.querySelectorAll('.variant-row');
+                if (!rows.length) return;
+
+                const isCarton = unitName === 'carton' || unitName === 'cartons' || unitName === 'ctn' || unitName === 'box' || unitName === 'boxes';
+
+                rows.forEach((row, i) => {
+                    const weight = parseFloat(row.querySelector('.variant-weight').value) || 1;
+                    const saleInput = row.querySelector('.variant-sale-price');
+                    const purchInput = row.querySelector('.variant-purchase-price');
+
+                    if (isCarton) {
+                        if (i === 0) {
+                            saleInput.value = baseSale.toFixed(2);
+                            purchInput.value = basePurch.toFixed(2);
+                        } else {
+                            const firstWt = parseFloat(rows[0].querySelector('.variant-weight').value) || 1;
+                            saleInput.value = (baseSale / firstWt).toFixed(2);
+                            purchInput.value = (basePurch / firstWt).toFixed(2);
+                        }
+                    } else {
+                        saleInput.value = (baseSale * weight).toFixed(2);
+                        purchInput.value = (basePurch * weight).toFixed(2);
+                    }
+                });
+            }
+
+            function updateUnitLabel() {
+                const unitName = getUnitName(unitDropdown.value).toLowerCase();
+                const labels = document.querySelectorAll('.unit-label');
+                let txt = '(pc)';
+                if (unitName === 'kg' || unitName === 'kilogram' || unitName === 'kgs') txt = '(per kg)';
+                else if (unitName === 'carton' || unitName === 'cartons' || unitName === 'ctn' || unitName === 'box' || unitName === 'boxes') txt = '(per ctn)';
+                else if (unitName === 'pieces' || unitName === 'pcs' || unitName === 'piece') txt = '(per pc)';
+                labels.forEach(l => l.textContent = txt);
+            }
+
+            // Wire price recalculation
+            document.getElementById('sale_price_per_box').addEventListener('input', calculateVariantPrices);
+            document.getElementById('purchase_price_per_piece').addEventListener('input', calculateVariantPrices);
+            // Also recalc when variant weight changes (delegated)
+            document.getElementById('variantsBody').addEventListener('input', function(e) {
+                if (e.target.classList.contains('variant-weight')) {
+                    calculateVariantPrices();
+                }
+            });
+
+            // Override addVariantRow to wire weight changes and recalc
+            const origAdd = addVariantRow;
+            addVariantRow = function(name, weight, unit) {
+                origAdd(name, weight, unit);
+                // Recalculate prices for all rows after adding
+                setTimeout(calculateVariantPrices, 0);
+            };
+
+            // Trigger auto-generation when product name or unit changes
+            productNameInput.addEventListener('input', function() {
+                autoGenerateVariants();
+                updateUnitLabel();
+            });
+            unitDropdown.addEventListener('change', function() {
+                autoGenerateVariants();
+                updateUnitLabel();
+                setTimeout(calculateVariantPrices, 50);
+            });
+
+            // Also on initial load if unit is pre-selected
+            if (unitDropdown.value) {
+                autoGenerateVariants();
+                updateUnitLabel();
+                setTimeout(calculateVariantPrices, 50);
+            }
+
+            // Manual add variant button
+            document.getElementById('addVariantBtn').addEventListener('click', function() {
+                const unitId = unitDropdown.value;
+                const unitName = getUnitName(unitId);
+                const prodName = productNameInput.value.trim() || 'Variant';
+                addVariantRow(prodName + ' VAR', 1, unitName ? (unitName === 'Pieces' || unitName === 'Carton' ? 'Pcs' : unitName) : 'Pcs');
+                const rows = variantsBody.querySelectorAll('.variant-row');
+                if (rows.length > 1) {
+                    rows[0].querySelector('.remove-variant').disabled = false;
+                }
+            });
 
             // Select2
             $('#color-select').select2({ placeholder: "Select Colors", tags: true });

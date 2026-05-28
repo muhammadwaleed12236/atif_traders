@@ -346,6 +346,7 @@
                             <th>Image</th>
                             <th>Category</th>
                             <th>Item Name</th>
+                            <th>Variants</th>
                             <th>Stock</th>
                             <th>Trade Price</th>
                             <th>Retail Price</th>
@@ -373,6 +374,17 @@
                                     <small class="text-muted">{{ $product->sub_category_relation->name ?? '-' }}</small>
                                 </td>
                                 <td>{{ $product->item_name }}</td>
+                                <td>
+                                    @if ($product->variants->count() > 0)
+                                        @foreach ($product->variants as $v)
+                                            <span class="badge bg-light text-dark border me-1" style="font-size:0.75rem;">
+                                                {{ $v->name }} ({{ $v->weight_per_piece }}{{ $v->weight_unit }})
+                                            </span>
+                                        @endforeach
+                                    @else
+                                        <span class="text-muted small">—</span>
+                                    @endif
+                                </td>
                                 @php
                                     $stockPieces = (float) ($product->warehouse_stocks_sum_total_pieces ?? 0);
                                     $ppb = $product->pieces_per_box > 0 ? $product->pieces_per_box : 1;
@@ -977,7 +989,7 @@
                 order: [[1, 'asc']],
                 dom: 'rt',  // only table rows, no search/filter UI
                 columnDefs: [{
-                    targets: [0, 11],
+                    targets: [0, 12],
                     orderable: false,
                     searchable: false
                 }]

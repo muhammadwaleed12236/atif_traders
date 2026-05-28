@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Stock;
 use App\Models\StockMovement;
 use App\Models\Subcategory;
@@ -196,6 +197,7 @@ class ProductController extends Controller
             'sub_category_relation',
             'unit',
             'brand',
+            'variants',
         ])->withSum('warehouseStocks', 'total_pieces');
 
         // ── Filters ──
@@ -491,6 +493,9 @@ class ProductController extends Controller
                     'note' => 'Initial Stock',
                 ]);
             }
+
+            // Save Variants
+            $this->saveVariants($request, $product->id);
         });
 
         if ($request->wantsJson()) {
@@ -734,6 +739,9 @@ class ProductController extends Controller
 
                 $this->upsertStocks($id, $adjQty, 1, 1);
             }
+
+            // Sync Variants
+            $this->saveVariants($request, $id);
         });
 
         if ($request->wantsJson()) {
@@ -746,7 +754,7 @@ class ProductController extends Controller
     // ===== Edit view =====
     public function edit($id)
     {
-        $product = Product::with('category_relation', 'sub_category_relation', 'unit', 'brand', 'warehouseStocks')
+        $product = Product::with('category_relation', 'sub_category_relation', 'unit', 'brand', 'warehouseStocks', 'variants')
             ->findOrFail($id);
         $categories = Category::all();
         $subcategories = SubCategory::all();
@@ -765,7 +773,9 @@ class ProductController extends Controller
             $product->loose_pieces    = 0;
         }
 
-        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands'));
+        $units = Unit::select('id', 'name')->get();
+
+        return view('admin_panel.product.edit', compact('product', 'categories', 'subcategories', 'brands', 'units'));
     }
 
     // ===== Barcode view =====
@@ -833,6 +843,32 @@ class ProductController extends Controller
         }
 
         return response()->json(['status' => 'success', 'message' => 'Valid']);
+    }
+
+    // ===== Save / Sync Variants =====
+    private function saveVariants(Request $request, int $productId): void
+    {
+        // Delete existing variants before re-saving
+        ProductVariant::where('product_id', $productId)->delete();
+
+        if ($request->has('variant_name')) {
+            foreach ($request->variant_name as $index => $name) {
+                if (empty(trim($name))) {
+                    continue;
+                }
+
+                ProductVariant::create([
+                    'product_id'      => $productId,
+                    'name'            => $name,
+                    'weight_per_piece' => (float) ($request->variant_weight[$index] ?? 0),
+                    'weight_unit'     => $request->variant_weight_unit[$index] ?? 'kg',
+                    'sale_price'      => (float) ($request->variant_sale_price[$index] ?? 0),
+                    'purchase_price'  => (float) ($request->variant_purchase_price[$index] ?? 0),
+                    'alert_quantity'  => $request->variant_alert_quantity[$index] ?? null,
+                    'barcode'         => $request->variant_barcode[$index] ?? null,
+                ]);
+            }
+        }
     }
 
     // ===== Toggle Product Active/Inactive =====
